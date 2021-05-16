@@ -4,6 +4,9 @@ let invaderimageone = new Image()
 let invaderimagetwo = new Image()
 let redinvader = new Image()
 let playership = new Image()
+let bosshits = 0
+let win = false
+let finishgame = false
 
 invaderimageone.src = "imges/1enemy.png"
 invaderimagetwo.src = "imges/2enemy.png"
@@ -94,16 +97,29 @@ let boss = new player(300,1,150,100)
 let timer = 0
 
 function draw() {
+    if (finishgame){
+        endgame()
+        window.clearInterval(intervalid)
+    }
+    //timer
     timer++
-    //drawing the player
+
+    //clearing canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    //drawing status
+    ctx.font = "30px Arial"
+    ctx.fillStyle = "red"
+    let text = `Boss after ${50-playerobj.kills}`
+    if (playerobj.kills >= 50){
+        text = `Boss Health: ${20-bosshits}`
+    }
+    ctx.fillText(text,canvas.width-220,30)
+
+    //drawing the player
     ctx.beginPath()
     ctx.fillStyle = "blue"
     ctx.drawImage(playership, playerobj.x, playerobj.y, playerobj.width, playerobj.height)
-
-    // ctx.fillRect(playerobj.x, playerobj.y, playerobj.width, playerobj.height)
-    ctx.fill()
-    ctx.stroke()
     playerobj.moveBullets()
     ctx.closePath()
 
@@ -135,9 +151,6 @@ function draw() {
             ctx.beginPath()
             ctx.fillStyle = "Red"
             ctx.drawImage(enemybullets[i].currentimg, enemybullets[i].x-20, enemybullets[i].y-20)
-            // ctx.arc(enemybullets[i].x, enemybullets[i].y, 10, 0, 360)
-            // ctx.fill()
-            // ctx.stroke()
             ctx.closePath()
             enemybullets[i].drop()
             if (timer % 30 === 0) {
@@ -147,7 +160,7 @@ function draw() {
     }
 
     //drawing the boss
-    if (playerobj.kills >= 2){
+    if (playerobj.kills >= 51){
         ctx.fillStyle = "red"
         ctx.drawImage(redinvader, boss.x, boss.y, boss.width, boss.height)
         // ctx.fillRect(boss.x, boss.y, boss.width, boss.height)
@@ -160,13 +173,12 @@ function draw() {
         }
     }
 
-
     check_collisions()
 
 
 }
 
-window.setInterval(draw, 17)
+let intervalid = window.setInterval(draw, 17)
 
 function check_collisions() {
     for (let i = 0; i < playerobj.bullets.length; i++) {
@@ -182,7 +194,7 @@ function check_collisions() {
                         playerobj.bullets[i].remove()
                         enemybullets[j].remove()
                         playerobj.kills++
-                        if (playerobj.kills === 1){
+                        if (playerobj.kills === 50){
                             enemybullets = []
                             playerobj.kills++
                         }
@@ -198,9 +210,14 @@ function check_collisions() {
             }
 
             //player bullet with boss
-            if (playerobj.kills >=2 && playerobj.bullets[i].y < (boss.y + boss.height) && playerobj.bullets[i].x+50 > boss.x && playerobj.bullets[i].x+50 < (boss.x + boss.width)){
+            if (playerobj.kills >=51 && playerobj.bullets[i].y < (boss.y + boss.height) && playerobj.bullets[i].x+50 > boss.x && playerobj.bullets[i].x+50 < (boss.x + boss.width)){
                 playerobj.bullets[i].active = false
-                // console.log("thats a HIT")
+                bosshits++
+                //player wins
+                if (bosshits === 20){
+                    win = true
+                    finishgame = true
+                }
             }
 
         }
@@ -209,12 +226,12 @@ function check_collisions() {
         if (enemybullets[i].active) {
             //enemy bullets with player
             if (enemybullets[i].y > playerobj.y && enemybullets[i].x > playerobj.x && enemybullets[i].x < (playerobj.x + playerobj.width)) {
-                //console.log("game OVer")
+                win = false
+                finishgame = true
             }
 
             //enemy bullet with wall
             for (let j = 0; j < walls.length; j++) {
-
                 if (enemybullets[i].y > walls[j].y && enemybullets[i].x > walls[j].x && enemybullets[i].x < (walls[j].x + walls[j].width)) {
                     enemybullets[i].active = false
                 }
@@ -234,8 +251,22 @@ function check_collisions() {
 }
 
 
+
+function endgame(){
+    //player wins
+    if (win){
+        alert("you won")
+
+    }else{
+        alert("you lost")
+        //player loses
+
+    }
+}
+
+
 document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight" && (playerobj.x + 200) < canvas.width) {
+    if (e.key === "ArrowRight" && (playerobj.x + playerobj.width) < canvas.width) {
         playerobj.x += 15
     } else if (e.key === "ArrowLeft" && playerobj.x > 0) {
         playerobj.x -= 15
