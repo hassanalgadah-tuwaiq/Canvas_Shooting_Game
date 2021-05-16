@@ -2,9 +2,13 @@ let canvas = document.querySelector("#canvas")
 let ctx = canvas.getContext('2d')
 let invaderimageone = new Image()
 let invaderimagetwo = new Image()
+let redinvader = new Image()
+let playership = new Image()
+
 invaderimageone.src = "imges/1enemy.png"
 invaderimagetwo.src = "imges/2enemy.png"
-
+redinvader.src = "imges/RedInvader.png"
+playership.src = "imges/ship.png"
 class player {
     constructor(x, y,width,height) {
         this.x = x
@@ -78,7 +82,7 @@ class wall{
 }
 
 
-let playerobj = new player(300, canvas.height - 100, 200,30)
+let playerobj = new player(300, canvas.height - 150, 100,150)
 
 let walls = [creatwall(),creatwall()]
 
@@ -86,7 +90,7 @@ let enemybullets = new Array(300)
 for (let i = 0; i < 500; i++) {
     enemybullets[i] = new bullet(Math.floor(Math.random() * 900) + 1, Math.floor(Math.random() * -30000));
 }
-let boss = new player(300,1,100,100)
+let boss = new player(300,1,150,100)
 let timer = 0
 
 function draw() {
@@ -94,8 +98,10 @@ function draw() {
     //drawing the player
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath()
-    ctx.fillStyle = "#000000"
-    ctx.fillRect(playerobj.x, playerobj.y, playerobj.width, playerobj.height)
+    ctx.fillStyle = "blue"
+    ctx.drawImage(playership, playerobj.x, playerobj.y, playerobj.width, playerobj.height)
+
+    // ctx.fillRect(playerobj.x, playerobj.y, playerobj.width, playerobj.height)
     ctx.fill()
     ctx.stroke()
     playerobj.moveBullets()
@@ -117,7 +123,7 @@ function draw() {
         if (bullets[i].active) {
             ctx.beginPath()
             ctx.fillStyle = "#7371FC"
-            ctx.arc(bullets[i].x + 100, bullets[i].y, 20, 0, 360)
+            ctx.arc(bullets[i].x + 50, bullets[i].y, 20, 0, 360)
             ctx.fill()
             ctx.stroke()
             ctx.closePath()
@@ -129,9 +135,9 @@ function draw() {
             ctx.beginPath()
             ctx.fillStyle = "Red"
             ctx.drawImage(enemybullets[i].currentimg, enemybullets[i].x-20, enemybullets[i].y-20)
-            ctx.arc(enemybullets[i].x, enemybullets[i].y, 10, 0, 360)
-            ctx.fill()
-            ctx.stroke()
+            // ctx.arc(enemybullets[i].x, enemybullets[i].y, 10, 0, 360)
+            // ctx.fill()
+            // ctx.stroke()
             ctx.closePath()
             enemybullets[i].drop()
             if (timer % 30 === 0) {
@@ -143,9 +149,10 @@ function draw() {
     //drawing the boss
     if (playerobj.kills >= 2){
         ctx.fillStyle = "red"
-        ctx.fillRect(boss.x, boss.y, boss.width, boss.height)
-        ctx.fill()
-        ctx.stroke()
+        ctx.drawImage(redinvader, boss.x, boss.y, boss.width, boss.height)
+        // ctx.fillRect(boss.x, boss.y, boss.width, boss.height)
+        // ctx.fill()
+        // ctx.stroke()
         boss.move()
         if (timer % 50 === 0) {
             enemybullets.push(new bullet(boss.x,boss.y))
@@ -168,7 +175,7 @@ function check_collisions() {
             //bullet vs bullet
             for (let j = 0; j < enemybullets.length; j++) {
                 if (enemybullets[j].active) {
-                    let dx = playerobj.bullets[i].x + 100 - enemybullets[j].x;
+                    let dx = playerobj.bullets[i].x + 50 - enemybullets[j].x;
                     let dy = playerobj.bullets[i].y - enemybullets[j].y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < 30) {
@@ -185,13 +192,13 @@ function check_collisions() {
 
             //player bullet with wall
             for (let j = 0; j < walls.length; j++) {
-                if (playerobj.bullets[i].y <( walls[j].y + walls[j].height) && playerobj.bullets[i].x+100 > walls[j].x && playerobj.bullets[i].x+100 < (walls[j].x + walls[j].width)) {
+                if (playerobj.bullets[i].y <( walls[j].y + walls[j].height) && playerobj.bullets[i].x+50 > walls[j].x && playerobj.bullets[i].x+50 < (walls[j].x + walls[j].width)) {
                     playerobj.bullets[i].active = false
                 }
             }
 
             //player bullet with boss
-            if (playerobj.kills >=2 && playerobj.bullets[i].y < (boss.y + boss.height) && playerobj.bullets[i].x+100 > boss.x && playerobj.bullets[i].x+100 < (boss.x + boss.width)){
+            if (playerobj.kills >=2 && playerobj.bullets[i].y < (boss.y + boss.height) && playerobj.bullets[i].x+50 > boss.x && playerobj.bullets[i].x+50 < (boss.x + boss.width)){
                 playerobj.bullets[i].active = false
                 // console.log("thats a HIT")
             }
@@ -201,7 +208,7 @@ function check_collisions() {
     for (let i = 0; i < enemybullets.length; i++) {
         if (enemybullets[i].active) {
             //enemy bullets with player
-            if (enemybullets[i].y > playerobj.y && enemybullets[i].x > playerobj.x && enemybullets[i].x < (playerobj.x + 200)) {
+            if (enemybullets[i].y > playerobj.y && enemybullets[i].x > playerobj.x && enemybullets[i].x < (playerobj.x + playerobj.width)) {
                 //console.log("game OVer")
             }
 
