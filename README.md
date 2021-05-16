@@ -2,14 +2,14 @@
 
 I bulit this game using vanila javascript with canvas 
 
-## controls
+## Controls
 left and right arrow key to move the ship
 
 
 arrow up to shoot
 
 
-## winning
+## Winning
 after shooting 50 of the enemy bullets the boss will apper 
 
 
