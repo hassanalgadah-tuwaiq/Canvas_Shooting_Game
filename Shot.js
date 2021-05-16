@@ -11,11 +11,11 @@ let bosshits = 0
 let win = false
 let finishgame = false
 
-invaderimageone.src = "imges/1enemy.png"
-invaderimagetwo.src = "imges/2enemy.png"
-redinvader.src = "imges/RedInvader.png"
-playership.src = "imges/ship.png"
-wallimg.src = "imges/wall.png"
+invaderimageone.src = "Imges/1enemy.png"
+invaderimagetwo.src = "Imges/2enemy.png"
+redinvader.src = "Imges/RedInvader.png"
+playership.src = "Imges/ship.png"
+wallimg.src = "Imges/wall.png"
 class player {
     constructor(x, y,width,height) {
         this.x = x
