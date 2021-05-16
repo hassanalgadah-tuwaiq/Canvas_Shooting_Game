@@ -1,9 +1,12 @@
 let canvas = document.querySelector("#canvas")
 let ctx = canvas.getContext('2d')
+ctx.canvas.width  = window.innerWidth;
+ctx.canvas.height = window.innerHeight;
 let invaderimageone = new Image()
 let invaderimagetwo = new Image()
 let redinvader = new Image()
 let playership = new Image()
+let wallimg = new Image()
 let bosshits = 0
 let win = false
 let finishgame = false
@@ -12,6 +15,7 @@ invaderimageone.src = "imges/1enemy.png"
 invaderimagetwo.src = "imges/2enemy.png"
 redinvader.src = "imges/RedInvader.png"
 playership.src = "imges/ship.png"
+wallimg.src = "imges/wall.png"
 class player {
     constructor(x, y,width,height) {
         this.x = x
@@ -61,7 +65,9 @@ class bullet {
 
     drop() {
         this.y += 5
-        if (this.y > canvas.height) this.active = false
+        if (this.y > canvas.height) {
+            this.active = false
+        }
     }
     remove() {
         this.active = false
@@ -85,21 +91,23 @@ class wall{
 }
 
 
-let playerobj = new player(300, canvas.height - 150, 100,150)
+let playerobj = new player((canvas.width/2)-50, canvas.height - 150, 100,150)
 
 let walls = [creatwall(),creatwall()]
 
 let enemybullets = new Array(300)
-for (let i = 0; i < 500; i++) {
-    enemybullets[i] = new bullet(Math.floor(Math.random() * 900) + 1, Math.floor(Math.random() * -30000));
+for (let i = 0; i < 800; i++) {
+    enemybullets[i] = new bullet(Math.floor(Math.random() * canvas.width) + 1, Math.floor(Math.random() * -30000));
 }
-let boss = new player(300,1,150,100)
+let boss = new player((canvas.width/2)-75,10,150,100)
 let timer = 0
 
 function draw() {
+    //check if the game is finished
     if (finishgame){
         endgame()
         window.clearInterval(intervalid)
+        return
     }
     //timer
     timer++
@@ -126,10 +134,10 @@ function draw() {
 
     //drawing walls
     for (let i = 0; i < walls.length; i++) {
-        ctx.fillStyle = "Blue"
-        ctx.fillRect(walls[i].x, walls[i].y, walls[i].width, walls[i].height)
-        ctx.fill()
-        ctx.stroke()
+        ctx.beginPath()
+        ctx.drawImage(wallimg, walls[i].x, walls[i].y, walls[i].width, walls[i].height)
+        ctx.rect(walls[i].x, walls[i].y, walls[i].width, walls[i].height)
+        ctx.closePath()
     }
 
 
@@ -174,7 +182,6 @@ function draw() {
     }
 
     check_collisions()
-
 
 }
 
@@ -253,15 +260,20 @@ function check_collisions() {
 
 
 function endgame(){
+    ctx.font = "100px Arial"
+    ctx.fillStyle = "red"
+    let finishtext
+
     //player wins
     if (win){
-        alert("you won")
+        finishtext = 'YOU WON'
 
     }else{
-        alert("you lost")
         //player loses
-
+        finishtext = 'YOU LOST'
     }
+    ctx.fillText(finishtext,(canvas.width/2) - 200,canvas.height/2)
+
 }
 
 
@@ -277,5 +289,5 @@ document.addEventListener("keydown", (e) => {
 
 
 function creatwall() {
-    return new wall((Math.floor(Math.random() * 900) + 1),Math.floor(Math.random() * 700) + 1,  ((Math.random() * 100) + 50) ,Math.floor(Math.random() * 100) + 50)
+    return new wall((Math.floor(Math.random() * canvas.width) + 1),Math.floor(Math.random() * (canvas.height - 300)) + 1,  ((Math.random() * 200) + 100) ,Math.floor(Math.random() * 200) + 100)
 }
